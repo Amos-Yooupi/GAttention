@@ -6,11 +6,14 @@ Real-time and accurate prediction of the long-term behavior of dynamic systems i
 
 ![Diagram](figs/architecture.png) <!-- Insert your image path here -->
 
-## Model Parameters
+## Regional Graph Representation
+Graph convolution operations inherently introduce an inductive bias, assuming that a node's features are primarily influenced by its neighboring nodes. Based on this assumption, we introduce a novel strategy: the neighbors of a node are pre-aggregated, with the node itself serving as the central hub of a region, 
+![Diagram](figs/region.png)
 
+## Model Parameters
 Below are the model parameters:
 
-json
+'''json
 {
   "embed_dim": 32,
   "hidden_dim": 32,
@@ -46,7 +49,11 @@ json
   "num_longitude": 384,
   "num_latitude": 512,
   "region_order": 1
-}
+}'''
+
+## Detail Implementatino of Module 
+the time expert consists of two linear layers and one convolutional module. Its workflow is as follows: first, the feature dimensions are projected via the linear layer; then, gating convolution is used to extract temporal dimension information; finally, the linear layer is employed to aggregate the temporal dimensions. The time-aware expert includes two types of experts: shared experts and sparse experts. The shared expert is a mandatory module for all inputs, while sparse experts are dynamically allocated by the router to control the contribution weights of each expert in the model.
+![Diagram](figs/modules.png) 
 
 ## Running Instructions
 Run the run_this.py file. You can select different datasets through the embedding_choose parameter and choose different graph region orders using the region_order parameter.
