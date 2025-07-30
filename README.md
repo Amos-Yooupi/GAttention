@@ -4,7 +4,7 @@
 
 Real-time and accurate prediction of the long-term behavior of dynamic systems is crucial for identifying risks during unexpected events, while computational efficiency is significantly influenced by the scale of the dynamic system. However, existing neural network models often focus on optimizing network structures to improve accuracy, neglecting key issues like computational efficiency. To address this, we propose a general regional graph representation method, which can be deployed in graph-based models. This approach reduces the graph size in advance and combines fusion graph convolution with lightweight convolution modules to extract the topological information of dynamic systems, providing a feasible solution for real-time computation. Our experimental results show that the introduction of a time-aware expert module significantly enhances model performance, achieving an optimal balance between computation speed and prediction accuracy. This framework holds broad application potential in fields such as intelligent transportation, weather forecasting, and energy management.
 
-![Diagram](figs/architecture.pdf) <!-- Insert your image path here -->
+![Diagram](figs/architecture.png) <!-- Insert your image path here -->
 
 ## Model Parameters
 
