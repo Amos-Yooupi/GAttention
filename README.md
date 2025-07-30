@@ -1,4 +1,4 @@
-# Dynamic System Prediction using Regional Graph Representation
+# A Deep Learning Architecture for Long-Term Time Series Forecasting of Dynamic Systems
 
 ## Project Overview
 
