@@ -57,6 +57,8 @@ the time expert consists of two linear layers and one convolutional module. Its 
 
 ## Running Instructions
 Run the run_this.py file. You can select different datasets through the embedding_choose parameter and choose different graph region orders using the region_order parameter.
+All model run results, saved models, and relevant training curves will be stored in the corresponding loss folder, with each model having its own dedicated subfolder for storage.
+You can use the is_region parameter to decide whether to enable regional graph representation, and adjust the region_order parameter to control the size of the regions.
 ## Application Areas
 - Intelligent Transportation: Real-time traffic prediction and traffic management optimization.
 - Weather Forecasting: Accurate prediction of dynamic weather data.
