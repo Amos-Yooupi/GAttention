@@ -22,11 +22,12 @@ class OutHeadTBC(nn.Module):
 
 
 class OutHeadTraffic(nn.Module):
-    def __init__(self, in_dim, out_dim, num_layers, region_infor, is_region=True):
+    def __init__(self, in_dim, out_dim, num_layers, region_infor, node_idx, is_region=True):
         super(OutHeadTraffic, self).__init__()
         self.out_dim = out_dim
         self.region_infor = region_infor
         self.num_node = region_infor.sum()
+        self.node_idx = node_idx
         # 预测第一个区域的节点
         if is_region:
             self.linear = BasicExpert(in_dim, in_dim, out_dim * self.num_node, num_layers)
@@ -45,7 +46,7 @@ class OutHeadTraffic(nn.Module):
         B, _, T, D = x.shape
         if self.is_region:
             # 这里一定要和数据集对应
-            region_node_x = x[:, 2]  # (B, T, D)
+            region_node_x = x[:, self.node_idx]  # (B, T, D)
             # 预测第一个区域的节点
             region_node_out = self.linear(region_node_x)  # (B, T, num_node * out_dim)
             graph_out = region_node_out.contiguous().view(B, T, self.num_node, self.out_dim).transpose(1, 2)

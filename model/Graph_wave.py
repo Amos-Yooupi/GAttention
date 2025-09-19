@@ -57,3 +57,6 @@ class GraphWaveNet(nn.Module):
             result.append(x)
         return sum(result),
 
+    def __str__(self):
+        return "GraphWaveNet"
+

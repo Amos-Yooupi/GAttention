@@ -22,3 +22,6 @@ class GAT(nn.Module):
             x, _ = self.gat_layers[i](x, adj)
         x = x.contiguous().view(b, l, n, d).transpose(1, 2)
         return x,
+
+    def __str__(self):
+        return "GAT"

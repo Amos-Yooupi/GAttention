@@ -124,4 +124,7 @@ class STGCN(nn.Module):
         out4 = self.fully(out3)
         return out4,
 
+    def __str__(self):
+        return "STGCN"
+
 

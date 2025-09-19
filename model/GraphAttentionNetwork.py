@@ -118,6 +118,15 @@ class FusionGraphAttentionLayer(nn.Module):
         return fusion_out, adj
 
 
+def show_att_prob(att_prob):
+    import matplotlib.pyplot as plt
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
+    plt.imshow(att_prob.detach().cpu().numpy())
+    plt.colorbar()
+    plt.show()
+
+
 class GraphNeuralNetwork(nn.Module):
     def __init__(self, in_features, activation="relu"):
         super(GraphNeuralNetwork, self).__init__()

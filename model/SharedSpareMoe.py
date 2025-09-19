@@ -24,13 +24,13 @@ class BasicExpert(nn.Module):
 
 
 class TimeBlock(nn.Module):
-    def __init__(self, in_dim, out_dim):
+    def __init__(self, in_dim, out_dim, kernel_size=3):
         """用于处理时间维度的模块 - 卷积层 + 门控线性单元"""
 
         super().__init__()
-        self.time_conv = nn.Conv1d(in_dim, out_dim, kernel_size=3, padding=1)
+        self.time_conv = nn.Conv1d(in_dim, out_dim, kernel_size=kernel_size, padding=kernel_size // 2)
         self.skip_conv = nn.Conv1d(in_dim, out_dim, kernel_size=1)
-        self.time_gate = nn.Conv1d(in_dim, out_dim, kernel_size=3, padding=1)
+        self.time_gate = nn.Conv1d(in_dim, out_dim, kernel_size=kernel_size, padding=kernel_size // 2)
         # self.restore_linear = nn.Linear(in_dim, out_dim)
 
     def forward(self, x):
@@ -118,7 +118,7 @@ class SpareMOE(nn.Module):
         self.experts = nn.ModuleList()
         for i in range(num_expert):
             # 每个专家用于处理不同的周期 --- 选择合适的专家模型 in_channel在变化
-            expert = BasicExpert(in_channel // (i+2), out_channel, out_channel, num_layer)
+            expert = TimeBlock(1, 1, kernel_size=2 * i + 1)
             self.experts.append(expert)
 
         # 默认 top_k为None则选取num_expert//2个专家
@@ -156,13 +156,13 @@ class SpareMOE(nn.Module):
             expert = self.experts[i]
             # 得到当前周期的输入
             # current_x = self.fourier_transform(x, i+1)  # [batch_size, seq_length//2**(i+1), dim]
-            current_x = self.downsample(x, i+2)  # [batch_size, seq_length//2**(i+1), dim]
+            current_x = x  # [batch_size, seq_length//2**(i+1), dim]
             # 找出选择了当前专家的batch的索引 以及是top_k中的哪个 用于后续门控机制的计算
             select_batch_idx, select_dim_idx, select_top_idx = torch.where(top_k_idx == i)
-            current_expert_x = current_x[select_batch_idx, select_dim_idx, :]  # [num_select, seq_length//2**(i+1)]
+            current_expert_x = current_x[select_batch_idx, select_dim_idx, :].unsqueeze(dim=-1)  # [num_select, seq_length//2**(i+1)]
             current_logit = router_logit[select_batch_idx, select_dim_idx, select_top_idx].unsqueeze(dim=-1)  # [num_select, 1]
             # 使用当前的专家模型进行计算
-            current_state = expert(current_expert_x) * current_logit  # [num_select, seq_length]
+            current_state = expert(current_expert_x).squeeze(dim=-1) * current_logit  # [num_select, seq_length]
             # 添加到最后的状态中
             final_state[select_batch_idx, select_dim_idx, :] += current_state  # [batch_size, in_dim, in_channel]
         return final_state.transpose(1, 2)  # [batch_size, seq_length, in_dim]

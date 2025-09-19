@@ -1,5 +1,5 @@
 from Embedding import *
-from GAttention import GAttention
+from RGNN import RGNN
 import torch.nn as nn
 from OutHead import *
 from LSTM import LSTM
@@ -16,7 +16,7 @@ class BasicModel(nn.Module):
             self.out = OutHeadTBC(config.hidden_dim, config.out_dim, config.num_moe_layer)
         elif config.embedding_choose == 'Traffic':
             self.embedding = TrafficEmbedding(config.traffic_dim, config.embed_dim)
-            self.out = OutHeadTraffic(config.hidden_dim, config.out_dim, config.num_moe_layer, config.num_node)
+            self.out = OutHeadTraffic(config.hidden_dim, config.out_dim, config.num_moe_layer, config.num_node, config.node_idx)
         elif config.embedding_choose == 'Weather':
             self.embedding = WeatherEmbedding(config.weather_dim, config.embed_dim)
             self.out = OutHeadWeather(config.embed_dim, config.out_dim, config.hidden_dim, config.num_blocks)
@@ -36,3 +36,6 @@ class BasicModel(nn.Module):
             mask = 1
         graph_out_x = self.backbone(graph_x, adj)
         return self.out(graph_out_x) * mask
+
+    def __str__(self):
+        return self.backbone.name

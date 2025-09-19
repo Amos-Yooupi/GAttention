@@ -1,4 +1,4 @@
-from GAttention import GAttentionBlock
+from RGNN import RGNN, RGNNBlock
 from LSTM import LSTM
 import torch.nn as nn
 from GraphAttentionNetwork import FusionGraphAttentionLayer, GraphNeuralNetwork
@@ -15,7 +15,7 @@ class BackBone(nn.Module):
         self.name = backbone_type
         self.backbone = nn.ModuleList()
         self.config = config
-        if backbone_type == 'GAttention':
+        if backbone_type == 'RGNN':
             # 选择不同动态系统的编码方式
             if config.representation == 'graph':
                 # 是否使用区域化图表示
@@ -35,7 +35,7 @@ class BackBone(nn.Module):
                                                    for _ in range(config.num_blocks)])
             else:
                 raise ValueError('Invalid representation: {}'.format(config.representation))
-            [self.backbone.append(GAttentionBlock(config.embed_dim, config.hidden_dim,
+            [self.backbone.append(RGNNBlock(config.embed_dim, config.hidden_dim,
                                                   config.in_len, config.num_head_for_time,
                                                   config.num_head_for_node, config.num_moe_layer,
                                                   config.num_expert, config.top_k, config.att_mode,
@@ -53,7 +53,7 @@ class BackBone(nn.Module):
             raise ValueError('Invalid backbone type: {}'.format(backbone_type))
 
     def forward(self, *args, **kwargs):
-        if self.name == 'GAttention':
+        if self.name == 'RGNN':
             if self.config.representation == 'graph':
                 x, adj = args[0], args[1]
                 # 时间和B在一个维度
